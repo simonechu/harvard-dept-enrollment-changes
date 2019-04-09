@@ -12,45 +12,79 @@ library(ggplot2)
 library(readxl)
 library(fs)
 library(gganimate)
+library(janitor)
 library(tidyverse)
 ```
 
-```{r, echo=FALSE, include=FALSE, warning=FALSE, message=FALSE}
+```{r downloading_data, echo=FALSE, include=FALSE, warning=FALSE, message=FALSE, cache=TRUE}
 
 # Getting the necessary data (I chose to narrow it down to the past 4 years, so I'm loading 
 # eight different datasets)!
 
+# Because some of these datasets were formatted differently (for example, in some, the column 
+# that contained info about undergraduate enrollment (u_grad) was called "hcol"), I did some 
+# cleaning up. I also made sure that all the column names were in snake case, for easy use later
+# on. 
+
 download.file("https://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_3.22.19.xlsx", destfile = "s19.xlsx")
-s19 <- read_excel("s19.xlsx", skip = 3)
+s19 <- read_excel("s19.xlsx", skip = 3) %>%
+  clean_names() %>%
+  mutate(term = 8)
   file_delete("s19.xlsx")
   
 download.file("https://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_10.24.18.xlsx", destfile = "f18.xlsx")
-f18 <- read_excel("f18.xlsx", skip = 3)
+f18 <- read_excel("f18.xlsx", skip = 2) %>%
+  clean_names() %>%
+  mutate(term = 7)
   file_delete("f18.xlsx")
 
 download.file("https://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_03.06.18.xlsx", destfile = "s18.xlsx")
-s18 <- read_excel("s18.xlsx", skip = 3)
+s18 <- read_excel("s18.xlsx", skip = 3) %>%
+  clean_names() %>%
+  mutate(term = 6)
   file_delete("s18.xlsx")
   
 download.file("https://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_10.20.17.xlsx", destfile = "f17.xlsx")
-f17 <- read_excel("f17.xlsx", skip = 3)
+f17 <- read_excel("f17.xlsx", skip = 3) %>%
+  clean_names() %>%
+  mutate(term = 5)
   file_delete("f17.xlsx")
 
 download.file("http://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_2017_03_07_final_0.xlsx", destfile = "s17.xlsx")
-s17 <- read_excel("s17.xlsx", skip = 3)
+s17 <- read_excel("s17.xlsx", skip = 3) %>%
+  clean_names() %>%
+  mutate(term = 4)
   file_delete("s17.xlsx")
   
 download.file("http://registrar.fas.harvard.edu/files/fas-registrar/files/copy_of_class_enrollment_summary_by_term_10.06.2016.xlsx", destfile = "f16.xlsx")
-f16 <- read_excel("f16.xlsx", skip = 3)
+f16 <- read_excel("f16.xlsx", skip = 3) %>%
+  clean_names() %>%
+  mutate(term = 3)
   file_delete("f16.xlsx")
 
 download.file("http://registrar.fas.harvard.edu/files/fas-registrar/files/course_enrollment_statistics_0.xlsx", destfile = "s16.xlsx")  
-s16 <- read_excel("s16.xlsx", skip = 3)
+s16 <- read_excel("s16.xlsx", skip = 0) %>%
+  clean_names() %>%
+  mutate(term = 2) %>%
+  rename(u_grad = hcol)
   file_delete("s16.xlsx")
   
 download.file("http://webdocs.registrar.fas.harvard.edu/reports/statistics/Fall_2015/CourseEnrollmentStatistics.xlsx", destfile = "f15.xlsx")
-f15 <- read_excel("f15.xlsx", skip = 3)
+f15 <- read_excel("f15.xlsx", skip = 0) %>%
+  clean_names() %>%
+  mutate(term = 1) %>%
+  rename(u_grad = hcol)
   file_delete("f15.xlsx")
   
+# I put each semester's data in a separate set of lines of code so that R could delete the files
+# as it ran -- hopefully that makes it faster? If not, I guess this was unnecessary, but I liked
+# having things organized this way. 
+  
+```
+
+```{r counts, echo=FALSE, warning=FALSE}
+
+
+
 ```
 
