@@ -1,5 +1,5 @@
 ---
-title: "for_graphic"
+title: "Undergraduate Enrollment and Class Offerings, by Dept"
 author: "Simone Chu"
 date: "4/9/2019"
 output: html_document
@@ -29,62 +29,85 @@ library(tidyverse)
 download.file("https://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_3.22.19.xlsx", destfile = "s19.xlsx")
 s19 <- read_excel("s19.xlsx", skip = 3) %>%
   clean_names() %>%
-  mutate(term = 8)
+  filter(u_grad > 0) %>%
+  group_by(course_department) %>%
+  summarize(n_courses = n(), enrollment = sum(u_grad))
   file_delete("s19.xlsx")
   
 download.file("https://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_10.24.18.xlsx", destfile = "f18.xlsx")
 f18 <- read_excel("f18.xlsx", skip = 2) %>%
   clean_names() %>%
-  mutate(term = 7)
+  filter(u_grad > 0) %>%
+  group_by(course_department) %>%
+  summarize(n_courses = n(), enrollment = sum(u_grad))
   file_delete("f18.xlsx")
 
 download.file("https://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_03.06.18.xlsx", destfile = "s18.xlsx")
 s18 <- read_excel("s18.xlsx", skip = 3) %>%
   clean_names() %>%
-  mutate(term = 6)
+  filter(u_grad > 0) %>%
+  group_by(course_department) %>%
+  summarize(n_courses = n(), enrollment = sum(u_grad))
   file_delete("s18.xlsx")
   
 download.file("https://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_10.20.17.xlsx", destfile = "f17.xlsx")
 f17 <- read_excel("f17.xlsx", skip = 3) %>%
   clean_names() %>%
-  mutate(term = 5)
+  filter(u_grad > 0) %>%
+  group_by(course_department) %>%
+  summarize(n_courses = n(), enrollment = sum(u_grad))
   file_delete("f17.xlsx")
 
 download.file("http://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_2017_03_07_final_0.xlsx", destfile = "s17.xlsx")
 s17 <- read_excel("s17.xlsx", skip = 3) %>%
   clean_names() %>%
-  mutate(term = 4)
+  filter(u_grad > 0) %>%
+  group_by(course_department) %>%
+  summarize(n_courses = n(), enrollment = sum(u_grad))
   file_delete("s17.xlsx")
   
 download.file("http://registrar.fas.harvard.edu/files/fas-registrar/files/copy_of_class_enrollment_summary_by_term_10.06.2016.xlsx", destfile = "f16.xlsx")
 f16 <- read_excel("f16.xlsx", skip = 3) %>%
   clean_names() %>%
-  mutate(term = 3)
+  filter(u_grad > 0) %>%
+  group_by(course_department) %>%
+  summarize(n_courses = n(), enrollment = sum(u_grad))
   file_delete("f16.xlsx")
 
-download.file("http://registrar.fas.harvard.edu/files/fas-registrar/files/course_enrollment_statistics_0.xlsx", destfile = "s16.xlsx")  
-s16 <- read_excel("s16.xlsx", skip = 0) %>%
-  clean_names() %>%
-  mutate(term = 2) %>%
-  rename(u_grad = hcol)
-  file_delete("s16.xlsx")
-  
-download.file("http://webdocs.registrar.fas.harvard.edu/reports/statistics/Fall_2015/CourseEnrollmentStatistics.xlsx", destfile = "f15.xlsx")
-f15 <- read_excel("f15.xlsx", skip = 0) %>%
-  clean_names() %>%
-  mutate(term = 1) %>%
-  rename(u_grad = hcol)
-  file_delete("f15.xlsx")
+# download.file("http://registrar.fas.harvard.edu/files/fas-registrar/files/course_enrollment_statistics_0.xlsx", destfile = "s16.xlsx")  
+# s16 <- read_excel("s16.xlsx", skip = 0) %>%
+#   clean_names() %>%
+#   mutate(term = 2) %>%
+#   rename(u_grad = hcol) %>%
+#   filter(u_grad > 0) %>%
+#   group_by(department) %>%
+#   summarize(n_courses = n(), enrollment = sum(u_grad))
+#   file_delete("s16.xlsx")
+#   
+# download.file("http://webdocs.registrar.fas.harvard.edu/reports/statistics/Fall_2015/CourseEnrollmentStatistics.xlsx", destfile = "f15.xlsx")
+# f15 <- read_excel("f15.xlsx", skip = 0) %>%
+#   clean_names() %>%
+#   mutate(term = 1) %>%
+#   rename(u_grad = hcol) %>%
+#   filter(u_grad > 0) %>%
+#   group_by(department) %>%
+#   summarize(n_courses = n(), enrollment = sum(u_grad))
+#   file_delete("f15.xlsx")
   
 # I put each semester's data in a separate set of lines of code so that R could delete the files
 # as it ran -- hopefully that makes it faster? If not, I guess this was unnecessary, but I liked
 # having things organized this way. 
   
+all <- bind_rows(f16, s17, f17, s18, f18, s19, .id = "term") %>%
+  filter(!is.na(course_department))
+  
 ```
 
-```{r counts, echo=FALSE, warning=FALSE}
 
+```{r}
 
-
+ggplot(all, aes(x = n_courses, y = enrollment, color = course_department)) +
+  geom_point() +
+  theme(legend.position = "none")
+  
 ```
-
