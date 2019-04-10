@@ -1,5 +1,5 @@
 ---
-title: "Undergraduate Enrollment and Class Offerings, by Dept"
+title: "Changes in Department Size, Fall 2016 - Spring 2019"
 author: "Simone Chu"
 date: "4/9/2019"
 output: html_document
@@ -14,6 +14,7 @@ library(fs)
 library(gganimate)
 library(ggthemes)
 library(janitor)
+library(lubridate)
 library(tidyverse)
 ```
 
@@ -38,7 +39,8 @@ s19 <- read_excel("s19.xlsx", skip = 3) %>%
   clean_names() %>%
   filter(u_grad > 0) %>%
   group_by(course_department) %>%
-  summarize(n_courses = n(), enrollment = sum(u_grad), avg_class_size = mean(u_grad))
+  summarize(n_courses = n(), enrollment = sum(u_grad), avg_class_size = mean(u_grad)) %>%
+  mutate(term = "January 2019")
   file_delete("s19.xlsx")
   
 download.file("https://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_10.24.18.xlsx", destfile = "f18.xlsx")
@@ -46,7 +48,8 @@ f18 <- read_excel("f18.xlsx", skip = 2) %>%
   clean_names() %>%
   filter(u_grad > 0) %>%
   group_by(course_department) %>%
-  summarize(n_courses = n(), enrollment = sum(u_grad), avg_class_size = mean(u_grad))
+  summarize(n_courses = n(), enrollment = sum(u_grad), avg_class_size = mean(u_grad)) %>%
+  mutate(term = "September 2018")
   file_delete("f18.xlsx")
 
 download.file("https://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_03.06.18.xlsx", destfile = "s18.xlsx")
@@ -54,7 +57,8 @@ s18 <- read_excel("s18.xlsx", skip = 3) %>%
   clean_names() %>%
   filter(u_grad > 0) %>%
   group_by(course_department) %>%
-  summarize(n_courses = n(), enrollment = sum(u_grad), avg_class_size = mean(u_grad))
+  summarize(n_courses = n(), enrollment = sum(u_grad), avg_class_size = mean(u_grad)) %>%
+  mutate(term = "January 2018")
   file_delete("s18.xlsx")
   
 download.file("https://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_10.20.17.xlsx", destfile = "f17.xlsx")
@@ -62,7 +66,8 @@ f17 <- read_excel("f17.xlsx", skip = 3) %>%
   clean_names() %>%
   filter(u_grad > 0) %>%
   group_by(course_department) %>%
-  summarize(n_courses = n(), enrollment = sum(u_grad), avg_class_size = mean(u_grad))
+  summarize(n_courses = n(), enrollment = sum(u_grad), avg_class_size = mean(u_grad)) %>%
+  mutate(term = "September 2017")
   file_delete("f17.xlsx")
 
 download.file("http://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_2017_03_07_final_0.xlsx", destfile = "s17.xlsx")
@@ -70,7 +75,8 @@ s17 <- read_excel("s17.xlsx", skip = 3) %>%
   clean_names() %>%
   filter(u_grad > 0) %>%
   group_by(course_department) %>%
-  summarize(n_courses = n(), enrollment = sum(u_grad), avg_class_size = mean(u_grad))
+  summarize(n_courses = n(), enrollment = sum(u_grad), avg_class_size = mean(u_grad)) %>%
+  mutate(term = "January 2017")
   file_delete("s17.xlsx")
   
 download.file("http://registrar.fas.harvard.edu/files/fas-registrar/files/copy_of_class_enrollment_summary_by_term_10.06.2016.xlsx", destfile = "f16.xlsx")
@@ -78,7 +84,8 @@ f16 <- read_excel("f16.xlsx", skip = 3) %>%
   clean_names() %>%
   filter(u_grad > 0) %>%
   group_by(course_department) %>%
-  summarize(n_courses = n(), enrollment = sum(u_grad), avg_class_size = mean(u_grad))
+  summarize(n_courses = n(), enrollment = sum(u_grad), avg_class_size = mean(u_grad)) %>%
+  mutate(term = "September 2016")
   file_delete("f16.xlsx")
   
 # I put each semester's data in a separate set of lines of code so that R could delete the files
@@ -89,9 +96,14 @@ f16 <- read_excel("f16.xlsx", skip = 3) %>%
 
 ```{r, echo=FALSE, include=TRUE, warning=FALSE, message=FALSE}
 
-all <- bind_rows(f16, s17, f17, s18, f18, s19, .id = "term") %>%
+all <- bind_rows(f16, s17, f17, s18, f18, s19) %>%
   filter(!is.na(course_department)) %>%
-  filter(course_department != "No Department") %>%
+  filter(!(course_department %in% c("No Department", "House Seminars",
+                                    "Freshman Seminars",
+                                    "Special Concentrations",
+                                    "General Education"))) %>%
+  # mutate(term = (as.Date(c("January 2019", "September 2018", "January 2018", "September 2017",
+  #                          "January 2017", "September 2016"), format = '%B %Y'))) %>%
   mutate(division = case_when(
     course_department %in% c("Celtic Languages & Literatures", "Classics, The", 
                              "Comparative Literature", "East Asian Langs & Civ",
@@ -132,15 +144,15 @@ all <- bind_rows(f16, s17, f17, s18, f18, s19, .id = "term") %>%
                              "Computer Science", "Engineering Sciences",
                              "Environmental Sci & Engineer") ~ "Engineering & Applied Sciences",
     
-    course_department == "Special Concentrations" ~ "Special Concentrations",
+    # course_department == "Special Concentrations" ~ "Special Concentrations",
     
-    course_department == "Expository Writing" ~ "Expository Writing",
+    course_department == "Expository Writing" ~ "Expository Writing"
     
-    course_department == "Freshman Seminars" ~ "Freshman Seminars",
-    
-    course_department == "General Education" ~ "General Education", 
-    
-    course_department == "House Seminars" ~ "House Seminars"
+    # course_department == "Freshman Seminars" ~ "Freshman Seminars",
+    # 
+    # course_department == "General Education" ~ "General Education", 
+    # 
+    # course_department == "House Seminars" ~ "House Seminars"
   ))
   
 # I wanted a cool way to see trends by division (i.e., Arts & Humanities, Social Sciences,
@@ -154,24 +166,25 @@ all <- bind_rows(f16, s17, f17, s18, f18, s19, .id = "term") %>%
 ```
 
 
-```{r, echo=FALSE, include=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
-
-div_palette <- c("#2E74C0", "#ACCE55", "#617", "#01D135", "#4D0835", "#FAB",
-                 "#F81", "#F3D024", "#9DF")
+```{r, echo=FALSE, include=TRUE, message=FALSE, warning=FALSE, cache=TRUE}
 
 ggplot(all, aes(x = n_courses, y = enrollment, size = avg_class_size, 
-                alpha = 0.5, color = division)) +
+                alpha = 0.95, color = division)) +
   geom_point() +
   theme_economist_white() +
-  theme(legend.position = "right") + 
-  labs(title = "Changes in Department Size, Fall 2016 - Spring 2019") + 
+  theme(legend.position = "bottom") + 
+  labs(title = "Department Size, Fall 2016 - Spring 2019",
+       subtitle = "Term Beginning: {closest_state}") + 
   xlab("Number of Courses Offered") + 
   ylab("Undergraduate Enrollment") +
-  # scale_color_manual(values = div_palette) + 
+  scale_color_brewer(palette = "Set1") +
   guides(alpha = FALSE,
-         size = guide_legend(title = "Mean Class Size"),
-         color = guide_legend(title = " Academic Division")) +
+         size = guide_legend(title = "Mean Class Size", order = 2),
+         color = guide_legend(title = "Academic Division", order = 1)) +
+  theme(legend.text=element_text(size=10)) +
   transition_states(term)
+
+# MAKE SURE TO DISPLAY THE TERM
   
 ```
 
