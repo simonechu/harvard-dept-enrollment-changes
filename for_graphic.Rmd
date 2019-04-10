@@ -87,7 +87,7 @@ f16 <- read_excel("f16.xlsx", skip = 3) %>%
   
 ```
 
-```{r, echo=FALSE, include=FALSE, warning=FALSE, message=FALSE}
+```{r, echo=FALSE, include=TRUE, warning=FALSE, message=FALSE}
 
 all <- bind_rows(f16, s17, f17, s18, f18, s19, .id = "term") %>%
   filter(!is.na(course_department)) %>%
@@ -168,6 +168,9 @@ ggplot(all, aes(x = n_courses, y = enrollment, size = avg_class_size,
   xlab("Number of Courses Offered") + 
   ylab("Undergraduate Enrollment") +
   # scale_color_manual(values = div_palette) + 
+  guides(alpha = FALSE,
+         size = guide_legend(title = "Mean Class Size"),
+         color = guide_legend(title = " Academic Division")) +
   transition_states(term)
   
 ```
