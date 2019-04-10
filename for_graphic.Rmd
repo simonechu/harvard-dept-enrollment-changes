@@ -27,12 +27,18 @@ library(tidyverse)
 # cleaning up. I also made sure that all the column names were in snake case, for easy use later
 # on. 
 
+# Lastly, I summarized the attributes I planned to use to convey information in the graphic;
+# finding the number of courses was as simple as counting the number of rows under each 
+# department, and enrollment only required a sum of the undergraduates enrolled. I decided to 
+# also find the mean class size to have something to base the size of each point on my plot off
+# of.
+
 download.file("https://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_3.22.19.xlsx", destfile = "s19.xlsx")
 s19 <- read_excel("s19.xlsx", skip = 3) %>%
   clean_names() %>%
   filter(u_grad > 0) %>%
   group_by(course_department) %>%
-  summarize(n_courses = n(), enrollment = sum(u_grad))
+  summarize(n_courses = n(), enrollment = sum(u_grad), avg_class_size = mean(u_grad))
   file_delete("s19.xlsx")
   
 download.file("https://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_10.24.18.xlsx", destfile = "f18.xlsx")
@@ -40,7 +46,7 @@ f18 <- read_excel("f18.xlsx", skip = 2) %>%
   clean_names() %>%
   filter(u_grad > 0) %>%
   group_by(course_department) %>%
-  summarize(n_courses = n(), enrollment = sum(u_grad))
+  summarize(n_courses = n(), enrollment = sum(u_grad), avg_class_size = mean(u_grad))
   file_delete("f18.xlsx")
 
 download.file("https://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_03.06.18.xlsx", destfile = "s18.xlsx")
@@ -48,7 +54,7 @@ s18 <- read_excel("s18.xlsx", skip = 3) %>%
   clean_names() %>%
   filter(u_grad > 0) %>%
   group_by(course_department) %>%
-  summarize(n_courses = n(), enrollment = sum(u_grad))
+  summarize(n_courses = n(), enrollment = sum(u_grad), avg_class_size = mean(u_grad))
   file_delete("s18.xlsx")
   
 download.file("https://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_10.20.17.xlsx", destfile = "f17.xlsx")
@@ -56,7 +62,7 @@ f17 <- read_excel("f17.xlsx", skip = 3) %>%
   clean_names() %>%
   filter(u_grad > 0) %>%
   group_by(course_department) %>%
-  summarize(n_courses = n(), enrollment = sum(u_grad))
+  summarize(n_courses = n(), enrollment = sum(u_grad), avg_class_size = mean(u_grad))
   file_delete("f17.xlsx")
 
 download.file("http://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_2017_03_07_final_0.xlsx", destfile = "s17.xlsx")
@@ -64,7 +70,7 @@ s17 <- read_excel("s17.xlsx", skip = 3) %>%
   clean_names() %>%
   filter(u_grad > 0) %>%
   group_by(course_department) %>%
-  summarize(n_courses = n(), enrollment = sum(u_grad))
+  summarize(n_courses = n(), enrollment = sum(u_grad), avg_class_size = mean(u_grad))
   file_delete("s17.xlsx")
   
 download.file("http://registrar.fas.harvard.edu/files/fas-registrar/files/copy_of_class_enrollment_summary_by_term_10.06.2016.xlsx", destfile = "f16.xlsx")
@@ -72,7 +78,7 @@ f16 <- read_excel("f16.xlsx", skip = 3) %>%
   clean_names() %>%
   filter(u_grad > 0) %>%
   group_by(course_department) %>%
-  summarize(n_courses = n(), enrollment = sum(u_grad))
+  summarize(n_courses = n(), enrollment = sum(u_grad), avg_class_size = mean(u_grad))
   file_delete("f16.xlsx")
   
 # I put each semester's data in a separate set of lines of code so that R could delete the files
@@ -150,14 +156,15 @@ all <- bind_rows(f16, s17, f17, s18, f18, s19, .id = "term") %>%
 
 ```{r, echo=FALSE, include=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 
-ggplot(all, aes(x = n_courses, y = enrollment, size = enrollment, alpha = course_department, color = division)) +
+ggplot(all, aes(x = n_courses, y = enrollment, size = avg_class_size, 
+                alpha = course_department, color = division)) +
   geom_point() +
   theme_economist_white() +
-  # theme(legend.position = "none") +
-  transition_states(term) + 
+  theme(legend.position = "bottom") + 
   labs(title = "Changes in Department Size, Fall 2016 - Spring 2019") + 
   xlab("Number of Courses Offered") + 
-  ylab("Undergraduate Enrollment")
+  ylab("Undergraduate Enrollment") +
+  transition_states(term)
   
 ```
 
