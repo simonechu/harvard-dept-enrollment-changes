@@ -12,6 +12,7 @@ library(ggplot2)
 library(readxl)
 library(fs)
 library(gganimate)
+library(ggthemes)
 library(janitor)
 library(tidyverse)
 ```
@@ -84,13 +85,13 @@ f16 <- read_excel("f16.xlsx", skip = 3) %>%
 #   summarize(n_courses = n(), enrollment = sum(u_grad))
 #   file_delete("s16.xlsx")
 #   
-# download.file("http://webdocs.registrar.fas.harvard.edu/reports/statistics/Fall_2015/CourseEnrollmentStatistics.xlsx", destfile = "f15.xlsx")
-# f15 <- read_excel("f15.xlsx", skip = 0) %>%
-#   clean_names() %>%
-#   mutate(term = 1) %>%
-#   rename(u_grad = hcol) %>%
-#   filter(u_grad > 0) %>%
-#   group_by(department) %>%
+download.file("http://webdocs.registrar.fas.harvard.edu/reports/statistics/Fall_2015/CourseEnrollmentStatistics.xlsx", destfile = "f15.xlsx")
+f15 <- read_excel("f15.xlsx", skip = 0) %>%
+  clean_names() %>%
+  mutate(term = 1) %>%
+  rename(u_grad = hcol) %>%
+  filter(u_grad > 0) %>%
+  group_by(department)
 #   summarize(n_courses = n(), enrollment = sum(u_grad))
 #   file_delete("f15.xlsx")
   
@@ -104,10 +105,25 @@ all <- bind_rows(f16, s17, f17, s18, f18, s19, .id = "term") %>%
 ```
 
 
-```{r}
+```{r, echo=FALSE, include=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 
-ggplot(all, aes(x = n_courses, y = enrollment, color = course_department)) +
+ggplot(all, aes(x = n_courses, y = enrollment, color = course_department, size = enrollment, alpha = 0.5)) +
   geom_point() +
-  theme(legend.position = "none")
+  theme_economist_white() +
+  theme(legend.position = "none") +
+  transition_states(term) + 
+  labs(title = "Changes in Department Size, 2016 - Present") + 
+  xlab("Number of Courses Offered") + 
+  ylab("Undergraduate Enrollment")
   
 ```
+
+
+```{r}
+download.file("https://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_3.22.19.xlsx", destfile = "s19.xlsx")
+test <- read_excel("s19.xlsx", skip = 3) %>%
+  clean_names() %>%
+  filter(u_grad > 0) %>%
+  group_by(course_department)
+```
+
