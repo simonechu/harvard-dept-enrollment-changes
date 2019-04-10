@@ -74,56 +74,89 @@ f16 <- read_excel("f16.xlsx", skip = 3) %>%
   group_by(course_department) %>%
   summarize(n_courses = n(), enrollment = sum(u_grad))
   file_delete("f16.xlsx")
-
-# download.file("http://registrar.fas.harvard.edu/files/fas-registrar/files/course_enrollment_statistics_0.xlsx", destfile = "s16.xlsx")  
-# s16 <- read_excel("s16.xlsx", skip = 0) %>%
-#   clean_names() %>%
-#   mutate(term = 2) %>%
-#   rename(u_grad = hcol) %>%
-#   filter(u_grad > 0) %>%
-#   group_by(department) %>%
-#   summarize(n_courses = n(), enrollment = sum(u_grad))
-#   file_delete("s16.xlsx")
-#   
-download.file("http://webdocs.registrar.fas.harvard.edu/reports/statistics/Fall_2015/CourseEnrollmentStatistics.xlsx", destfile = "f15.xlsx")
-f15 <- read_excel("f15.xlsx", skip = 0) %>%
-  clean_names() %>%
-  mutate(term = 1) %>%
-  rename(u_grad = hcol) %>%
-  filter(u_grad > 0) %>%
-  group_by(department)
-#   summarize(n_courses = n(), enrollment = sum(u_grad))
-#   file_delete("f15.xlsx")
   
 # I put each semester's data in a separate set of lines of code so that R could delete the files
 # as it ran -- hopefully that makes it faster? If not, I guess this was unnecessary, but I liked
 # having things organized this way. 
   
+```
+
+```{r, echo=FALSE, include=FALSE, warning=FALSE, message=FALSE}
+
 all <- bind_rows(f16, s17, f17, s18, f18, s19, .id = "term") %>%
-  filter(!is.na(course_department))
+  filter(!is.na(course_department)) %>%
+  filter(course_department != "No Department") %>%
+  mutate(division = case_when(
+    course_department %in% c("Celtic Languages & Literatures", "Classics, The", 
+                             "Comparative Literature", "East Asian Langs & Civ",
+                             "English", "Germanic Languages & Lit",
+                             "History of Art & Architecture", "Linguistics",
+                             "Music", "Near Eastern Languages & Civ", 
+                             "Philosophy", "Romance Languages & Lit",
+                             "Slavic Languages & Literatures", "South Asian Studies",
+                             "Theater, Dance & Media", "Folklore & Mythology",
+                             "History & Literature", "Religion, The Study of",
+                             "Visual & Environmental Studies", "American Studies",
+                             "Humanities", "Medieval Studies", 
+                             "Regional Studies-East Asia", "Ukrainian Studies",
+                             "Russia, E Europe, Central Asia") ~ "hum",
+    
+    course_department %in% c("Astronomy", "Chemistry & Chemical Biology",
+                             "Chemical & Physical Biology", "Earth & Planetary Sciences",
+                             "Human Evolutionary Biology", "Mathematics", 
+                             "Molecular & Cellular Biology", "Organismic & Evolutionary Biol",
+                             "Physics", "Statistics", "Stem Cell & Regenerative Biol",
+                             "Systems Biology", "Mind, Brain & Behavior",
+                             "Medical Sciences", "Neurobiology",
+                             "Bio Sciences in Public Health", "Biophysics",
+                             "Biostatistics", "Neuroscience") ~ "sci",
+    
+    course_department %in% c("African & African Amer Studies", "Anthropology", 
+                             "Economics", "Government", "History", 
+                             "History of Science", "Psychology", 
+                             "Social Studies", "Sociology",
+                             "Women, Gender & Sexuality",
+                             "Ethnicity, Migration, Rights",
+                             "Envi Science & Public Policy", 
+                             "Global Health & Health Policy", "Health Policy") ~ "soc",
+    
+    course_department %in% c("Applied Computation", "Applied Mathematics",
+                             "Applied Physics", "Biomedical Engineering",
+                             "Computer Science", "Engineering Sciences",
+                             "Environmental Sci & Engineer") ~ "seas",
+    
+    course_department == "Special Concentrations" ~ "spec",
+    
+    course_department == "Expository Writing" ~ "expos",
+    
+    course_department == "Freshman Seminars" ~ "fresh",
+    
+    course_department == "General Education" ~ "gen_ed", 
+    
+    course_department == "House Seminars" ~ "house"
+  ))
   
+# I wanted a cool way to see trends by division (i.e., Arts & Humanities, Social Sciences,
+# Sciences, and SEAS), so I assigned divisions to each of the course departments. This will 
+# help me make a cool graphic with nice colors later on! 
+
+# I based the divisions on this page: https://www.fas.harvard.edu/pages/academic-divisions. 
+# Sadly, not every department that appears in these datasets was accounted for by FAS, so I used # common sense to sort the rest (for example, it seemed reasonable to place "Neurobiology" under 
+# the Sciences division, and "Humanities" under the Humanities division). 
+
 ```
 
 
 ```{r, echo=FALSE, include=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 
-ggplot(all, aes(x = n_courses, y = enrollment, color = course_department, size = enrollment, alpha = 0.5)) +
+ggplot(all, aes(x = n_courses, y = enrollment, size = enrollment, alpha = course_department, color = division)) +
   geom_point() +
   theme_economist_white() +
-  theme(legend.position = "none") +
+  # theme(legend.position = "none") +
   transition_states(term) + 
-  labs(title = "Changes in Department Size, 2016 - Present") + 
+  labs(title = "Changes in Department Size, Fall 2016 - Spring 2019") + 
   xlab("Number of Courses Offered") + 
   ylab("Undergraduate Enrollment")
   
-```
-
-
-```{r}
-download.file("https://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_3.22.19.xlsx", destfile = "s19.xlsx")
-test <- read_excel("s19.xlsx", skip = 3) %>%
-  clean_names() %>%
-  filter(u_grad > 0) %>%
-  group_by(course_department)
 ```
 
