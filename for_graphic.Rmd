@@ -40,7 +40,7 @@ s19 <- read_excel("s19.xlsx", skip = 3) %>%
   filter(u_grad > 0) %>%
   group_by(course_department) %>%
   summarize(n_courses = n(), enrollment = sum(u_grad), avg_class_size = mean(u_grad)) %>%
-  mutate(term = "January 2019")
+  mutate(term = "2019 Spring")
   file_delete("s19.xlsx")
   
 download.file("https://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_10.24.18.xlsx", destfile = "f18.xlsx")
@@ -49,7 +49,7 @@ f18 <- read_excel("f18.xlsx", skip = 2) %>%
   filter(u_grad > 0) %>%
   group_by(course_department) %>%
   summarize(n_courses = n(), enrollment = sum(u_grad), avg_class_size = mean(u_grad)) %>%
-  mutate(term = "September 2018")
+  mutate(term = "2018 Fall")
   file_delete("f18.xlsx")
 
 download.file("https://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_03.06.18.xlsx", destfile = "s18.xlsx")
@@ -58,7 +58,7 @@ s18 <- read_excel("s18.xlsx", skip = 3) %>%
   filter(u_grad > 0) %>%
   group_by(course_department) %>%
   summarize(n_courses = n(), enrollment = sum(u_grad), avg_class_size = mean(u_grad)) %>%
-  mutate(term = "January 2018")
+  mutate(term = "2018 Spring")
   file_delete("s18.xlsx")
   
 download.file("https://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_10.20.17.xlsx", destfile = "f17.xlsx")
@@ -67,7 +67,7 @@ f17 <- read_excel("f17.xlsx", skip = 3) %>%
   filter(u_grad > 0) %>%
   group_by(course_department) %>%
   summarize(n_courses = n(), enrollment = sum(u_grad), avg_class_size = mean(u_grad)) %>%
-  mutate(term = "September 2017")
+  mutate(term = "2017 Fall")
   file_delete("f17.xlsx")
 
 download.file("http://registrar.fas.harvard.edu/files/fas-registrar/files/class_enrollment_summary_by_term_2017_03_07_final_0.xlsx", destfile = "s17.xlsx")
@@ -76,7 +76,7 @@ s17 <- read_excel("s17.xlsx", skip = 3) %>%
   filter(u_grad > 0) %>%
   group_by(course_department) %>%
   summarize(n_courses = n(), enrollment = sum(u_grad), avg_class_size = mean(u_grad)) %>%
-  mutate(term = "January 2017")
+  mutate(term = "2017 Spring")
   file_delete("s17.xlsx")
   
 download.file("http://registrar.fas.harvard.edu/files/fas-registrar/files/copy_of_class_enrollment_summary_by_term_10.06.2016.xlsx", destfile = "f16.xlsx")
@@ -85,7 +85,7 @@ f16 <- read_excel("f16.xlsx", skip = 3) %>%
   filter(u_grad > 0) %>%
   group_by(course_department) %>%
   summarize(n_courses = n(), enrollment = sum(u_grad), avg_class_size = mean(u_grad)) %>%
-  mutate(term = "September 2016")
+  mutate(term = "2016 Fall")
   file_delete("f16.xlsx")
   
 # I put each semester's data in a separate set of lines of code so that R could delete the files
@@ -172,9 +172,9 @@ ggplot(all, aes(x = n_courses, y = enrollment, size = avg_class_size,
                 alpha = 0.95, color = division)) +
   geom_point() +
   theme_economist_white() +
-  theme(legend.position = "bottom") + 
+  theme(legend.position = "right") + 
   labs(title = "Department Size, Fall 2016 - Spring 2019",
-       subtitle = "Term Beginning: {closest_state}") + 
+       subtitle = "Term: {closest_state}") + 
   xlab("Number of Courses Offered") + 
   ylab("Undergraduate Enrollment") +
   scale_color_brewer(palette = "Set1") +
