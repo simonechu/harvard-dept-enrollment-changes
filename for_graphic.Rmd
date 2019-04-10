@@ -99,7 +99,7 @@ all <- bind_rows(f16, s17, f17, s18, f18, s19, .id = "term") %>%
                              "Visual & Environmental Studies", "American Studies",
                              "Humanities", "Medieval Studies", 
                              "Regional Studies-East Asia", "Ukrainian Studies",
-                             "Russia, E Europe, Central Asia") ~ "hum",
+                             "Russia, E Europe, Central Asia") ~ "Arts & Humanities",
     
     course_department %in% c("Astronomy", "Chemistry & Chemical Biology",
                              "Chemical & Physical Biology", "Earth & Planetary Sciences",
@@ -109,7 +109,7 @@ all <- bind_rows(f16, s17, f17, s18, f18, s19, .id = "term") %>%
                              "Systems Biology", "Mind, Brain & Behavior",
                              "Medical Sciences", "Neurobiology",
                              "Bio Sciences in Public Health", "Biophysics",
-                             "Biostatistics", "Neuroscience") ~ "sci",
+                             "Biostatistics", "Neuroscience") ~ "Science",
     
     course_department %in% c("African & African Amer Studies", "Anthropology", 
                              "Economics", "Government", "History", 
@@ -118,22 +118,23 @@ all <- bind_rows(f16, s17, f17, s18, f18, s19, .id = "term") %>%
                              "Women, Gender & Sexuality",
                              "Ethnicity, Migration, Rights",
                              "Envi Science & Public Policy", 
-                             "Global Health & Health Policy", "Health Policy") ~ "soc",
+                             "Global Health & Health Policy", "Health Policy") 
+                              ~ "Social Science",
     
     course_department %in% c("Applied Computation", "Applied Mathematics",
                              "Applied Physics", "Biomedical Engineering",
                              "Computer Science", "Engineering Sciences",
-                             "Environmental Sci & Engineer") ~ "seas",
+                             "Environmental Sci & Engineer") ~ "Engineering & Applied Sciences",
     
-    course_department == "Special Concentrations" ~ "spec",
+    course_department == "Special Concentrations" ~ "Special Concentrations",
     
-    course_department == "Expository Writing" ~ "expos",
+    course_department == "Expository Writing" ~ "Expository Writing",
     
-    course_department == "Freshman Seminars" ~ "fresh",
+    course_department == "Freshman Seminars" ~ "Freshman Seminars",
     
-    course_department == "General Education" ~ "gen_ed", 
+    course_department == "General Education" ~ "General Education", 
     
-    course_department == "House Seminars" ~ "house"
+    course_department == "House Seminars" ~ "House Seminars"
   ))
   
 # I wanted a cool way to see trends by division (i.e., Arts & Humanities, Social Sciences,
