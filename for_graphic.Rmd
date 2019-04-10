@@ -156,14 +156,18 @@ all <- bind_rows(f16, s17, f17, s18, f18, s19, .id = "term") %>%
 
 ```{r, echo=FALSE, include=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 
+div_palette <- c("#2E74C0", "#ACCE55", "#617", "#01D135", "#4D0835", "#FAB",
+                 "#F81", "#F3D024", "#9DF")
+
 ggplot(all, aes(x = n_courses, y = enrollment, size = avg_class_size, 
-                alpha = course_department, color = division)) +
+                alpha = 0.5, color = division)) +
   geom_point() +
   theme_economist_white() +
-  theme(legend.position = "bottom") + 
+  theme(legend.position = "right") + 
   labs(title = "Changes in Department Size, Fall 2016 - Spring 2019") + 
   xlab("Number of Courses Offered") + 
   ylab("Undergraduate Enrollment") +
+  # scale_color_manual(values = div_palette) + 
   transition_states(term)
   
 ```
