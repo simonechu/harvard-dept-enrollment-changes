@@ -1,5 +1,5 @@
 ---
-title: "Changes in Department Size, Fall 2016 - Spring 2019"
+title: "Changes in Harvard College Department Size, Fall 2016 - Spring 2019"
 author: "Simone Chu"
 date: "4/9/2019"
 output: html_document
