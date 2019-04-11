@@ -185,7 +185,7 @@ ggplot(all, aes(x = n_courses, y = enrollment, size = avg_class_size,
 # I made sure to have the term denoted so that we could tell which term is being displayed.
   
   xlab("Number of Courses Offered") + 
-  ylab("Undergraduate Enrollment") +
+  ylab("Total Undergraduate Enrollment") +
   scale_color_brewer(palette = "Set1") +
   guides(alpha = FALSE,
          size = guide_legend(title = "Mean Class Size", order = 2),
@@ -202,4 +202,3 @@ ggplot(all, aes(x = n_courses, y = enrollment, size = avg_class_size,
   transition_states(term)
   
 ```
-
